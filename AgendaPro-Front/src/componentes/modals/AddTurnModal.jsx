@@ -53,14 +53,38 @@ export default function AddTurnModal({setModal, profesionalId, horarios}) {
     async function handleSubmit () {
         showLoading("Creando turno");
         let formatedProfesionalId = parseInt(profesionalId);
-        const response = await addTurn(formatedProfesionalId, date, hour);
+        
+        try {
+            const response = await addTurn(formatedProfesionalId, date, hour);
+             
+           if (!response.ok) {
+                // ... [código para leer el cuerpo del error] ...
+                let error = new Error(response.message);
+                error.status = response.statusCode; // <--- ¡Esto es lo que necesitas!
+                throw error;
+            }
 
-        if (response) {
+
+            if (response) {
+                hideLoading();
+                navigate("/cliente", { replace: true }, { state: { message: "Turno creado correctamente" }});
+                showOperation("Turno creado correctamente");
+            }
+        } catch (error) {
             hideLoading();
-            navigate("/cliente", { replace: true }, { state: { message: "Turno creado correctamente" }});
-            showOperation(response);
-        }
-
+            
+             if (error.status === 409) {
+                showOperation("Ya hay un turno para ese día y hora.");
+                
+            } else if (error.status === 404) {
+                showOperation("El turno no fue encontrado.");
+                
+            } else {
+                // Error genérico (red, 500, etc.)
+                showOperation(`Error: ${error.message}`);
+            }
+            
+        }    
 
     }
 

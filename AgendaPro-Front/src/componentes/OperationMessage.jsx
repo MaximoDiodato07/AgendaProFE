@@ -15,12 +15,18 @@ export default function OperationMessage({ message, setModalVisible }) {
         return () => clearTimeout(timer);
     }, [setModalVisible]);
 
+    const closeHandle = () => {
+        setModalVisible(false);
+        setMessage(null);
+    }
+
     return (  
             <>
             {/* Contenedor principal del modal */}
             <div className="success__modal-content" >
-                <h3 className="success__modal-title">{message} </h3>
-                
+                <button onClick={closeHandle} className="success__close-btn-container">
+                    <h3 className="success__modal-title">{message} </h3>               
+                </button>
             </div>
             </>    
     );

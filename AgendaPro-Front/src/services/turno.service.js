@@ -89,9 +89,15 @@ export async function addTurn(idProfesional, fecha, hora)
             // valido la consulta
             if (response.statusCode && response.statusCode >= 400){
                 new Error(response.message);
-                return false;
+                return response;
             }
-     
+            
+            if (!response.ok) {
+                // ... [código para leer el cuerpo del error] ...
+                const error = new Error(errorBody.message || response.statusText);
+                error.status = response.status; // <--- ¡Esto es lo que necesitas!
+                throw error;
+            }    
             return response.message;
         })
         .catch(error => {
@@ -100,6 +106,8 @@ export async function addTurn(idProfesional, fecha, hora)
              console.log(error);
              return false;
         });
+
+    
 }
 
 
